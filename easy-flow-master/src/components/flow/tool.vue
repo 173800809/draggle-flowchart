@@ -1,0 +1,114 @@
+<template>
+    <div style="background-color: #66a6e0;" ref="tool">
+        <el-menu :default-openeds="defaultOpeneds">
+            <el-submenu :index="menu.type+index" v-for="(menu,index)  in  menuList" :key="menu.type+index">
+                <template slot="title">
+                    <i :class="menu.ico"></i>
+                    <span>{{menu.name}}</span>
+                </template>
+
+                <el-menu-item-group>
+
+                    <draggable @end="addNode" v-for="(son,i) in menu.children" :key="son.type+i">
+                        <el-menu-item :index="son.type+i" :type="son.type"><i :class="son.ico"></i>{{son.name}}
+                        </el-menu-item>
+                    </draggable>
+
+
+
+               </el-menu-item-group>
+
+            </el-submenu>
+        </el-menu>
+    </div>
+</template>
+<script>
+    import draggable from 'vuedraggable'
+
+    export default {
+        data() {
+            return {
+
+                defaultOpeneds:['group0','group1'],
+                menuList: [
+                    {
+                        type: 'group',
+                        name: '开始结束节点',
+                        ico: 'el-icon-video-play',
+                        children: [
+                            {
+                                type: 'start',
+                                name: '开始',
+                                ico: 'el-icon-time',
+                            }, {
+                                type: 'end',
+                                name: '结束',
+                                ico: 'el-icon-odometer',
+                            }
+                        ]
+                    },
+                    {
+                        type: 'group',
+                        name: '判断处理节点',
+                        ico: 'el-icon-video-pause',
+                        children: [
+                            {
+
+                                type: 'judge',
+                                name: '判断',
+                                ico: 'el-icon-question',
+//
+                            }, {
+                                type: 'handle',
+                                name: '处理',
+                                ico: 'el-icon-sort',
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        components: {
+            draggable
+        },
+        methods: {
+            // 更具类型获取菜单
+            getMenu(type) {
+                for (var i = 0; i < this.menuList.length; i++) {
+                    let children = this.menuList[i].children;
+                    for (var j = 0; j < children.length; j++) {
+                        let son = children[j]
+                        if (son.type === type) {
+                            return son
+                        }
+                    }
+                }
+            },
+            // 添加节点
+            addNode(evt, e) {
+                let nodeMenu = this.getMenu(evt.originalEvent.srcElement.type)
+                this.$emit('addNode', evt, nodeMenu)
+            }
+        }
+    }
+</script>
+<style>
+    .flow-tool-menu {
+        background-color: #eeeeee;
+        cursor: pointer;
+        padding-left: 5px;
+        height: 50px;
+        line-height: 50px;
+        border-bottom: 1px solid #979797
+    }
+
+    .flow-tool-submenu {
+        background-color: white;
+        padding-left: 20px;
+        cursor: pointer;
+        height: 50px;
+        line-height: 50px;
+        vertical-align: middle;
+        border-bottom: 1px solid #d3d3d3
+    }
+</style>
